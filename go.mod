@@ -1,3 +1,3 @@
-module hello
+module learning-go-with-tests
 
 go 1.23.2
