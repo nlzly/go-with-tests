@@ -4,11 +4,21 @@ import (
 	"embed"
 	"html/template"
 	"io"
+	"strings"
 )
 
 type Post struct {
 	Title, Description, Body string
 	Tags                     []string
+}
+
+func (p Post) SanitisedTitle() string {
+	return strings.ToLower(strings.Replace(p.Title, " ", "-", -1))
+}
+
+type PostViewModel struct {
+	Title, SanitisedTitle, Description, Body string
+	Tags                                     []string
 }
 
 var (
@@ -30,10 +40,9 @@ func NewPostRenderer() (*PostRenderer, error) {
 }
 
 func (r *PostRenderer) Render(w io.Writer, p Post) error {
+	return r.templ.ExecuteTemplate(w, "postTemplate.gohtml", p)
+}
 
-	if err := r.templ.ExecuteTemplate(w, "postTemplate.gohtml", p); err != nil {
-		return err
-	}
-
-	return nil
+func (r *PostRenderer) RenderIndex(w io.Writer, posts []Post) error {
+	return r.templ.ExecuteTemplate(w, "index.gohtml", posts)
 }
